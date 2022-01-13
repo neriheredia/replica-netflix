@@ -6,11 +6,50 @@ import {
     PhoneAndroid,
     Publish,
   } from "@material-ui/icons";
-  import { Link } from "react-router-dom";
-  import "./user.css";
+import { Link, useParams } from "react-router-dom";
+import "./user.css";
+import { useState } from "react";
+import axios from 'axios'
+import { useEffect } from "react";
   
   export default function User() {
-    return (
+
+  const [currentUser, setUser] = useState()
+  const {userId} = useParams()
+  console.log(userId)
+  
+  useEffect(()=>{
+    const getNewUsers = async () => {
+      try {
+          const res = await axios.get("/users?new=true", {
+              headers: {
+                  token: "Bearer " + JSON.parse(localStorage.getItem("user")).accessToken}
+          })
+          setUser(res.data.filter(e=>e._id===userId)[0])
+          
+      } catch (err) {
+          console.log(err);
+      }
+  }
+  getNewUsers()
+  }, [])
+
+  const updateUser = async () => {
+    try {
+        const res = await axios.put(`/${userId}`, {
+            headers: {
+                token: "Bearer " + JSON.parse(localStorage.getItem("user")).accessToken}
+        })
+        res.send(currentUser)
+    } catch (err) {
+        console.log(err);
+    }
+  }
+  
+  console.log(currentUser)
+
+  if(currentUser)
+    {return (
       <div className="user">
         <div className="userTitleContainer">
           <h1 className="userTitle">Edit User</h1>
@@ -27,77 +66,86 @@ import {
                 className="userShowImg"
               />
               <div className="userShowTopTitle">
-                <span className="userShowUsername">Anna Becker</span>
-                <span className="userShowUserTitle">Software Engineer</span>
+                <span className="userShowUsername">{currentUser.username}</span>
+                <span className="userShowUserTitle">{currentUser.profession||'No career'}</span>
               </div>
             </div>
             <div className="userShowBottom">
               <span className="userShowTitle">Account Details</span>
               <div className="userShowInfo">
                 <PermIdentity className="userShowIcon" />
-                <span className="userShowInfoTitle">annabeck99</span>
+                <span className="userShowInfoTitle">{currentUser.username}</span>
               </div>
               <div className="userShowInfo">
                 <CalendarToday className="userShowIcon" />
-                <span className="userShowInfoTitle">10.12.1999</span>
+                <span className="userShowInfoTitle">{currentUser.createdAt.split('T')[0].replaceAll('-','.')}</span>
               </div>
               <span className="userShowTitle">Contact Details</span>
               <div className="userShowInfo">
                 <PhoneAndroid className="userShowIcon" />
-                <span className="userShowInfoTitle">+1 123 456 67</span>
+                <span className="userShowInfoTitle">{currentUser.phoneNumber||'No phone number available'}</span>
               </div>
               <div className="userShowInfo">
                 <MailOutline className="userShowIcon" />
-                <span className="userShowInfoTitle">annabeck99@gmail.com</span>
+                <span className="userShowInfoTitle">{currentUser.email}</span>
               </div>
               <div className="userShowInfo">
                 <LocationSearching className="userShowIcon" />
-                <span className="userShowInfoTitle">New York | USA</span>
+                <span className="userShowInfoTitle">{currentUser.location||'Undisclosed location '}</span>
               </div>
             </div>
           </div>
           <div className="userUpdate">
             <span className="userUpdateTitle">Edit</span>
-            <form className="userUpdateForm">
+            <form className="userUpdateForm" onSubmit={(event) => {
+                event.preventDefault()
+                updateUser()
+                }
+            }>
               <div className="userUpdateLeft">
                 <div className="userUpdateItem">
                   <label>Username</label>
                   <input
                     type="text"
-                    placeholder="annabeck99"
+                    placeholder={currentUser.username}
                     className="userUpdateInput"
+                    onChange={(userEditor) => setUser({...currentUser, username: userEditor.target.value})}
                   />
                 </div>
                 <div className="userUpdateItem">
                   <label>Full Name</label>
                   <input
                     type="text"
-                    placeholder="Anna Becker"
+                    placeholder={currentUser.fullname||'Unknown'}
                     className="userUpdateInput"
+                    onChange={(userEditor) => setUser({...currentUser, fullname: userEditor.target.value})}
                   />
                 </div>
                 <div className="userUpdateItem">
                   <label>Email</label>
                   <input
                     type="text"
-                    placeholder="annabeck99@gmail.com"
+                    placeholder={currentUser.email}
                     className="userUpdateInput"
+                    onChange={(userEditor) => setUser({...currentUser, email: userEditor.target.value})}
                   />
                 </div>
                 <div className="userUpdateItem">
                   <label>Phone</label>
                   <input
                     type="text"
-                    placeholder="+1 123 456 67"
+                    placeholder="Unknown"
                     className="userUpdateInput"
+                    onChange={(userEditor) => setUser({...currentUser, phoneNumber: userEditor.target.value})}
                   />
                 </div>
                 <div className="userUpdateItem">
                   <label>Address</label>
                   <input
                     type="text"
-                    placeholder="New York | USA"
+                    placeholder="Unknown | Unknown"
                     className="userUpdateInput"
+                    onChange={(userEditor) => setUser({...currentUser, address: userEditor.target.value})}
                   />
                 </div>
               </div>
@@ -113,11 +161,11 @@ import {
                   </label>
                   <input type="file" id="file" style={{ display: "none" }} />
                 </div>
-                <button className="userUpdateButton">Update</button>
+                <button type='submit' className="userUpdateButton">Update</button>
               </div>
             </form>
           </div>
         </div>
       </div>
-    );
+    );} else return null
   }

@@ -7,6 +7,7 @@ import axios from 'axios'
 export default function WidgetSm() {
 
     const [newUsers, setNewUsers] = useState([])
+    console.log(newUsers)
 
     useEffect(() => {
         const getNewUsers = async () => {
@@ -30,7 +31,7 @@ export default function WidgetSm() {
             <span className="widgetSmTitle">New Join Members</span>
             <ul className="widgetSmList">
                 {newUsers.map(user =>
-                    <li className="widgetSmListItem">
+                    <li className="widgetSmListItem" key={user._id}>
                         <img
                             src={user.profilePic || "https://crowd-literature.eu/wp-content/uploads/2015/01/no-avatar.gif"}
                             alt=""
