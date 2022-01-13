@@ -16,14 +16,14 @@ import { useEffect } from "react";
 
   const [currentUser, setUser] = useState()
   const {userId} = useParams()
-  console.log(userId)
+  //console.log(userId)
   
   useEffect(()=>{
     const getNewUsers = async () => {
       try {
           const res = await axios.get("/users?new=true", {
               headers: {
-                  token: "Bearer " + JSON.parse(localStorage.getItem("user")).accessToken}
+                token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxZGRlZWY0ZDI0NWE4MWRlNGY3NDIyZSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTY0MjAyNTk2MiwiZXhwIjoxNjQyNDU3OTYyfQ.jqoTjpcoA2sl3VX2NHnsRV7PTqgXly433uerttcK48k"}
           })
           setUser(res.data.filter(e=>e._id===userId)[0])
           
@@ -36,11 +36,12 @@ import { useEffect } from "react";
 
   const updateUser = async () => {
     try {
-        const res = await axios.put(`/${userId}`, {
+        const res = await axios.put(`/users/${userId}`, {
+            updatedUser:currentUser,
             headers: {
-                token: "Bearer " + JSON.parse(localStorage.getItem("user")).accessToken}
+                token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxZGRlZWY0ZDI0NWE4MWRlNGY3NDIyZSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTY0MjA4NjgyOCwiZXhwIjoxNjQyNTE4ODI4fQ.KIl8Hhx68vRKeEgwpmJbj2e51gcrg0YR--8weoNAEm4"}
         })
-        res.send(currentUser)
+        console.log('res', res)
     } catch (err) {
         console.log(err);
     }

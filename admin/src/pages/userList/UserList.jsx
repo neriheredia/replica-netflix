@@ -16,7 +16,7 @@ export default function UserList() {
       try {
           const res = await axios.get("/users?new=true", {
               headers: {
-                  token: "Bearer " + JSON.parse(localStorage.getItem("user")).accessToken}
+                token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxZGRlZWY0ZDI0NWE4MWRlNGY3NDIyZSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTY0MjAyNTk2MiwiZXhwIjoxNjQyNDU3OTYyfQ.jqoTjpcoA2sl3VX2NHnsRV7PTqgXly433uerttcK48k"}
           })
           setNewUsers(res.data)
       } catch (err) {
